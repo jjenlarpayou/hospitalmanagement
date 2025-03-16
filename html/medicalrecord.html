@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+  <link href="{{ url_for('static', filename='/style-registration.css') }}" rel="stylesheet" type="text/css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <title>Doctor Registration</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a href="/registration" class="nav-link">Registration</a>
+          </li>
+          <li class="nav-item">
+            <a href="/medicalrecord" class="nav-link active" aria-current="page">Medical Record</a>
+          </li>
+          <li class="nav-item">
+            <a href="/medicine" class="nav-link">Medicine</a>
+          </li>
+          <li class="nav-item">
+            <a href="/room" class="nav-link">Room Management</a>
+          </li>
+          <li class="nav-item">
+            <a href="/inpatient" class="nav-link">Inpatient</a>
+          </li>
+          <li class="nav-item">
+            <a href="/outpatient" class="nav-link">Outpatient</a>
+          </li>
+          <li class="nav-item">
+            <a href="/doctor" class="nav-link">Doctor</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="row">
+    <h3 align="center">Medical Record<button type="button" class="btn btn-outline-secondary btn-sm float-end"
+        data-bs-toggle="modal" data-bs-target="#myModal">Insert Medical Record</button></h3>
+    {% with messages = get_flashed_messages() %}
+    {% if messages%}
+    {% for message in messages %}
+    {% if message == 'Data Deleted Successfully' %}
+    <div class="alert alert-danger alert-dismissable" role="alert">
+      {{message}}
+      <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% else %}
+    <div class="alert alert-success alert-dismissable" role="alert">
+      {{message}}
+      <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {%endif%}
+    {%endfor%}
+    {%endif%}
+    {%endwith%}
+    <table align="center" border="1px">
+      <thead>
+        <tr>
+          <td>Medical Record ID</td>
+          <td>Doctor</td>
+          <td>Patient</td>
+          <td>Description</td>
+          <td>Prescription</td>
+          <td>Action</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {% for row in medicalrecords %}
+        <tr>
+          <td>{{row.0}}</td>
+          <td>{{row.2}} {{row.3}}</td>
+          <td>{{row.5}} {{row.6}}</td>
+          <td>{{row.7}}</td>
+          <td>{{row.8}}</td>
+          <td>
+            <a href="/update/medicalrecord/{{row.0}}" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+              data-bs-target="#myEdit{{row.0}}">Edit</a>
+            <a href="/delete/medicalrecord/{{row.0}}" class="btn btn-danger btn-sm"
+              onclick="return confirm('Are you sure')">Delete</a>
+          </td>
+        </tr>
+        <!-- Edit -->
+        <div class="modal" id="myEdit{{row.0}}" class="modal-fade" role="dialog" style="height: max-content;">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Update Information</h4>
+              </div>
+              <div class="modal-body">
+                <form action="{{url_for('updatemedicalrecord')}}" method="POST">
+                  <div class="form-group">
+                    <label>Medical Record ID:</label>
+                    <input type="text" name="Mrecord_id" class="form-control" required="1" value="{{row.0}}">
+                    <label>Doctor:</label>
+                    <select name="Doctor_id" class="form-select form-select-m" aria-label=".form-select-sm example" required="1">
+                      <option selected>{{row.1}}</option>
+                      {% for row in doctors %}
+                      <option value="{{row.0}}">{{row.0}}</option>
+                      {%endfor%}
+                    </select>
+                    <label>Patient:</label>
+                    <select name="Patient_id" class="form-select form-select-m" aria-label=".form-select-sm example" required="1">
+                      <option selected>{{row.4}}</option>
+                      {% for row in patients %}
+                      <option value="{{row.0}}">{{row.0}}</option>
+                      {%endfor%}
+                    </select>
+                    <label>Description:</label>
+                    <input type="text" name="Description" class="form-control" required="1" value="{{row.7}}">
+                    <label>Prescription:</label>
+                    <input type="text" name="Prescription" class="form-control" required="1" value="{{row.8}}">
+
+
+                    <div class="form-group" style="padding: 15px 0px 15px 0px;">
+                      <button class="btn btn-primary" type="submit">Update</button>
+                    </div>
+
+                </form>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-primary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- Insert -->
+  <div class="modal" id="myModal" class="modal-fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Please Insert Data</h4>
+        </div>
+        <div class="modal-body">
+          <form action="{{url_for('insertmedicalrecord')}}" method="POST">
+            <div class="form-group">
+              <label>Medical Record ID:</label>
+              <input type="text" name="Mrecord_id" class="form-control" required="1">
+              <label>Doctor ID:</label>
+              <select name="Doctor_id" class="form-select form-select-m" aria-label=".form-select-sm example"
+                required="1">
+                <option selected></option>
+                {% for row in doctors %}
+                <option value="{{row.0}}">{{row.0}}</option>
+                {%endfor%}
+              </select>
+              <label>Patient ID:</label>
+              <select name="Patient_id" class="form-select form-select-m" aria-label=".form-select-sm example"
+                required="1">
+                <option selected></option>
+                {% for row in patients %}
+                <option value="{{row.0}}">{{row.0}}</option>
+                {%endfor%}
+              </select>
+              <label>Description:</label>
+              <input type="text" name="Description" class="form-control" required="1">
+              <label>Prescription:</label>
+              <input type="text" name="Prescription" class="form-control" required="1">
+            </div>
+
+            <div class="form-group" style="padding: 15px 0px 15px 0px;">
+              <button class="btn btn-primary" type="submit">Insert</button>
+            </div>
+
+          </form>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
