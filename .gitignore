@@ -172,3 +172,17 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Ignore database dumps
+*.sql
+*.sqlite
+*.db
+*.db-shm
+*.db-wal
+
+# Ignore SQL logs and backups
+*.log
+*.bak
+*.backup
+
+
